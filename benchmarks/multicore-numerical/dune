@@ -84,12 +84,12 @@
  (modules mergesort))
 
 (alias (name multibench_parallel)
-			 (deps mandelbrot6_multicore.exe spectralnorm2_multicore.exe quicksort.exe
+			 (deps mandelbrot6_multicore.exe spectralnorm2_multicore.exe spectralnorm2_multicore_task.exe quicksort.exe
 						 quicksort_multicore.exe binarytrees5_multicore.exe
-						 game_of_life.exe game_of_life_multicore.exe
-						 matrix_multiplication.exe matrix_multiplication_multicore.exe
+						 game_of_life.exe game_of_life_multicore.exe game_of_life_multicore_task.exe
+						 matrix_multiplication.exe matrix_multiplication_multicore.exe matrix_multiplication_multicore_task.exe
 						 matrix_multiplication_tiling_multicore.exe nbody.exe
-						 nbody_multicore.exe mergesort.exe mergesort_multicore.exe
+						 nbody_multicore.exe mergesort.exe mergesort_multicore.exe mergesort_multicore_task.exe
 						 floyd_warshall.exe floyd_warshall_multicore.exe
 						 LU_decomposition.exe LU_decomposition_multicore.exe))
 

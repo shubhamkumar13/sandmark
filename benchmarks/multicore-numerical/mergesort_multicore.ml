@@ -1,6 +1,6 @@
-let n = try int_of_string (Array.get Sys.argv 1) with _ ->  10000
+let n = try int_of_string (Array.get Sys.argv 2) with _ ->  10000
 
-let num_domains = try int_of_string (Array.get Sys.argv 2) with _ -> 4
+let num_domains = try int_of_string (Array.get Sys.argv 1) with _ -> 4
 
 let rec take n = function
   | [] -> []
