@@ -62,6 +62,7 @@ let _ =
    let lst = gen n [] in
    let domains = spawn num_domains lst 0 (n / num_domains) in
    let res = List.map Domain.join domains in
-   let sorted = List.fold_left merge [] res in
-   List.iter (Printf.printf "%d\n") sorted;
-   Gc.print_stat stdout
+   let _sorted = List.fold_left merge [] res in
+   ()
+ (*  List.iter (Printf.printf "%d\n") sorted;
+   Gc.print_stat stdout *)

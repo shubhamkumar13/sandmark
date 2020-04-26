@@ -63,13 +63,13 @@
       "name": "mergesort_multicore",
       "ismacrobench": false,
       "runs": [
-  	{ "params": "1 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1"},
-        { "params": "2 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
-        { "params": "4 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
-        { "params": "8 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
-        { "params": "12 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
-        { "params": "16 1_000_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" },
-        { "params": "20 1_000_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" },
+  	{ "params": "1 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1"},
+        { "params": "2 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
+        { "params": "4 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
+        { "params": "8 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
+        { "params": "12 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
+        { "params": "16 100_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" },
+        { "params": "20 100_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" },
         { "params": "24 1_000_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" }
       ]
     },
@@ -78,14 +78,14 @@
       "name": "mergesort_multicore_task",
       "ismacrobench": false,
       "runs": [
-  	{ "params": "1 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1"},
-        { "params": "2 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
-        { "params": "4 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
-        { "params": "8 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
-        { "params": "12 1_000_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
-        { "params": "16 1_000_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" },
-        { "params": "20 1_000_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" },
-        { "params": "24 1_000_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" }
+  	{ "params": "1 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1"},
+        { "params": "2 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
+        { "params": "4 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
+        { "params": "8 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
+        { "params": "12 100_000", "paramwrapper": "taskset --cpu-list 2-13 chrt -r 1" },
+        { "params": "16 100_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" },
+        { "params": "20 100_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" },
+        { "params": "24 100_000", "paramwrapper": "taskset --cpu-list 2-13,16-27 chrt -r 1" }
       ]
     },
     {
