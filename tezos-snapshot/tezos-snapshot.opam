@@ -1,0 +1,11 @@
+opam-version: "2.0"
+name: "tezos-snapshot"
+version: "0.1"
+synopsis: ""
+maintainer: "Shubham Kumar <kumar.shubham1312@gmail.com>"
+authors: "Shubham Kumar <kumar.shubham1312@gmail.com>"
+license: "MIT"
+depends: []
+build: [
+  ["dune" "build" "-p" name]
+]

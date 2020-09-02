@@ -1,0 +1,5 @@
+(executable
+ (name import)
+ (modules import))
+
+(alias (name buildbench) (deps import.exe))

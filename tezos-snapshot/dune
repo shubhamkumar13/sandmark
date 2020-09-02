@@ -1,0 +1,3 @@
+(executable
+  (name tezos-snapshot)
+  (public-name tezos-snapshot))

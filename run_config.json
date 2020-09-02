@@ -1470,6 +1470,16 @@
       ]
     },
     {
+      "executable": "benchmarks/snapshot_import/import.exe",
+      "name": "snapshot_import",
+      "tags": ["macro_plus_bench"],
+      "runs": [
+	{
+	  "params": ""
+	}
+      ]
+    },
+    {
       "executable": "benchmarks/numerical-analysis/qr_decomposition.exe",
       "name": "qr-decomposition",
       "tags": [
