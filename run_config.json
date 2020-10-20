@@ -1335,6 +1335,18 @@
           "params": ""
         }
       ]
+    },
+    {
+      "executable": "benchmarks/multicore-numerical/inverse.exe",
+      "name": "inverse",
+      "tags": [
+        "macro_bench"
+      ],
+      "runs": [
+        {
+          "params": ""
+        }
+      ]
     }
   ]
 }
