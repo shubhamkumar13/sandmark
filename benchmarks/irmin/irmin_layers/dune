@@ -1,0 +1,5 @@
+(library
+ (name irmin_layers)
+ (libraries irmin logs lwt mtime mtime.clock.os)
+ (preprocess
+  (pps ppx_irmin)))
