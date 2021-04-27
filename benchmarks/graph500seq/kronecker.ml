@@ -31,17 +31,17 @@ let scale = try int_of_string Sys.argv.(1) with _ -> 2
 
 let edgefactor = try int_of_string Sys.argv.(2) with _ -> 1
 
-let rec randomWghtGen len ar =
+let rec random_weight_gen len ar =
   if len = 0 then ar
-  else randomWghtGen (len - 1) (Array.append ar [| Random.float 1. |])
+  else random_weight_gen (len - 1) (Array.append ar [| Random.float 1. |])
 
-let rec generateIIBitArray ar index ab =
+let rec generate_ii_bit_array ar index ab =
   if index = 0 then ar
   else if Random.float 1. > ab then
-    generateIIBitArray (Array.append ar [| 1. |]) (index - 1) ab
-  else generateIIBitArray (Array.append ar [| 0. |]) (index - 1) ab
+    generate_ii_bit_array (Array.append ar [| 1. |]) (index - 1) ab
+  else generate_ii_bit_array (Array.append ar [| 0. |]) (index - 1) ab
 
-let rec generateJJBitArray ar ii_bit m a_norm c_norm index =
+let rec generate_jj_bit_array ar ii_bit m a_norm c_norm index =
   if index = m then ar
   else
     let h = ii_bit.(index) in
@@ -49,37 +49,37 @@ let rec generateJJBitArray ar ii_bit m a_norm c_norm index =
       Random.float 1.
       > (c_norm *. h) +. (a_norm *. float_of_int (int_of_float h lxor 1))
     then
-      generateJJBitArray
+      generate_jj_bit_array
         (Array.append ar [| 1. |])
         ii_bit m a_norm c_norm (index + 1)
     else
-      generateJJBitArray
+      generate_jj_bit_array
         (Array.append ar [| 0. |])
         ii_bit m a_norm c_norm (index + 1)
 
-let rec modifyRowIJW kk_array index ar newAr iter m =
+let rec modify_row_i_j_w kk_array index ar newAr iter m =
   if iter = m then newAr
   else
     let element =
       ar.(iter) +. ((2. ** float_of_int index) *. kk_array.(iter))
     in
-    modifyRowIJW kk_array index ar
+    modify_row_i_j_w kk_array index ar
       (Array.append newAr [| element |])
       (iter + 1) m
 
-let rec compareWithPr index m n ab a_norm c_norm ijw scale =
+let rec compare_with_pr index m n ab a_norm c_norm ijw scale =
   if index = scale then ijw
   else
-    let ii_bit = generateIIBitArray [||] m ab in
-    let jj_bit = generateJJBitArray [||] ii_bit m a_norm c_norm 0 in
-    let firstRowIJW = modifyRowIJW ii_bit index ijw.(0) [||] 0 m in
-    let secondRowIJW = modifyRowIJW jj_bit index ijw.(1) [||] 0 m in
+    let ii_bit = generate_ii_bit_array [||] m ab in
+    let jj_bit = generate_jj_bit_array [||] ii_bit m a_norm c_norm 0 in
+    let first_row_i_j_w = modify_row_i_j_w ii_bit index ijw.(0) [||] 0 m in
+    let second_row_i_j_w = modify_row_i_j_w jj_bit index ijw.(1) [||] 0 m in
     let ijw =
       Array.append
-        (Array.append [| firstRowIJW |] [| secondRowIJW |])
+        (Array.append [| first_row_i_j_w |] [| second_row_i_j_w |])
         [| ijw.(2) |]
     in
-    compareWithPr (index + 1) m n ab a_norm c_norm ijw scale
+    compare_with_pr (index + 1) m n ab a_norm c_norm ijw scale
 
 let permute list =
   let list = List.map (fun x -> (Random.bits (), x)) list in
@@ -94,42 +94,42 @@ let transpose ar newAr =
   done;
   !newAr
 
-let computeNumber scale edgefactor =
+let compute_number scale edgefactor =
   let n = int_of_float (2. ** float_of_int scale) in
   let m = edgefactor * n in
   (n, m)
 
-let writeFile ijw file =
-  let rec writeFile ijw file index =
+let write_file ijw file =
+  let rec write_file ijw file index =
     if index = Array.length ijw then exit 0
     else
       let _ = Array.iter (Printf.fprintf file "%f, ") ijw.(index) in
       let _ = Printf.fprintf file "\n" in
-      writeFile ijw file (index + 1)
+      write_file ijw file (index + 1)
   in
-  writeFile ijw file 0
+  write_file ijw file 0
 
 let kronecker scale edgefactor =
-  let n, m = computeNumber scale edgefactor in
+  let n, m = compute_number scale edgefactor in
   let a, b, c = (0.57, 0.19, 0.19) in
   let ijw = Array.make_matrix 3 m 1. in
   let ab = a +. b in
   let c_norm = c /. (1. -. (a +. b)) in
   let a_norm = a /. (a +. b) in
-  let ijw = compareWithPr 0 m n ab a_norm c_norm ijw scale in
-  let thirdRow = randomWghtGen m [||] in
-  let firstRowPermute = Array.of_list (permute (Array.to_list ijw.(0))) in
-  let secondRowPermute = Array.of_list (permute (Array.to_list ijw.(1))) in
+  let ijw = compare_with_pr 0 m n ab a_norm c_norm ijw scale in
+  let third_row = random_weight_gen m [||] in
+  let first_row_permute = Array.of_list (permute (Array.to_list ijw.(0))) in
+  let second_row_permute = Array.of_list (permute (Array.to_list ijw.(1))) in
   let ijw =
     Array.append
-      (Array.append [| firstRowPermute |] [| secondRowPermute |])
-      [| thirdRow |]
+      (Array.append [| first_row_permute |] [| second_row_permute |])
+      [| third_row |]
   in
   let ar = Array.to_list (transpose ijw (ref (Array.make_matrix m 3 1.))) in
   let ijw = transpose (Array.of_list (permute ar)) (ref ijw) in
   if Sys.file_exists "kronecker.txt" then Sys.remove "kronecker.txt";
   let file = open_out "kronecker.txt" in
-  let _ = writeFile ijw file in
+  let _ = write_file ijw file in
   let _ = close_out file in
   ijw
 
