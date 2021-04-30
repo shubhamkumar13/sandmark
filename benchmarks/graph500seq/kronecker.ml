@@ -27,77 +27,57 @@
 (*(*<-------OCaml Kronecker Kernel inspired from https://graph500.org/?page_id=12---------->
 Written by support of PRISM Lab, IIT Madras and OCaml Labs*)*)
 
+module Int = struct
+include Int
+  let exp : int -> int -> int = fun a n -> 
+    Array.fold_left (fun acc x -> acc * x) 1 (Array.make n a)
+end
+
 let scale = try int_of_string Sys.argv.(1) with _ -> 2
 
 let edgefactor = try int_of_string Sys.argv.(2) with _ -> 1
 
-let rec random_weight_gen len ar =
-  if len = 0 then ar
-  else random_weight_gen (len - 1) (Array.append ar [| Random.float 1. |])
+(* let print_arr_1 = fun arr -> 
+    Array.iter (fun x -> 
+      Printf.printf "%f "x) arr;
+    Printf.printf "\n"
 
-let rec generate_ii_bit_array ar index ab =
-  if index = 0 then ar
-  else if Random.float 1. > ab then
-    generate_ii_bit_array (Array.append ar [| 1. |]) (index - 1) ab
-  else generate_ii_bit_array (Array.append ar [| 0. |]) (index - 1) ab
+let print_arr_2 = fun arr -> 
+  Array.iter (fun row -> print_arr_1 row) arr
 
-let rec generate_jj_bit_array ar ii_bit m a_norm c_norm index =
-  if index = m then ar
-  else
-    let h = ii_bit.(index) in
-    if
-      Random.float 1.
-      > (c_norm *. h) +. (a_norm *. float_of_int (int_of_float h lxor 1))
-    then
-      generate_jj_bit_array
-        (Array.append ar [| 1. |])
-        ii_bit m a_norm c_norm (index + 1)
-    else
-      generate_jj_bit_array
-        (Array.append ar [| 0. |])
-        ii_bit m a_norm c_norm (index + 1)
+let print_arr_3 = fun tens ->
+  Array.iter (fun arr -> print_arr_2 arr) tens  *)
 
-let rec modify_row_i_j_w kk_array index ar newAr iter m =
-  if iter = m then newAr
-  else
-    let element =
-      ar.(iter) +. ((2. ** float_of_int index) *. kk_array.(iter))
-    in
-    modify_row_i_j_w kk_array index ar
-      (Array.append newAr [| element |])
-      (iter + 1) m
+let compare_with_pr m ab a_norm c_norm scale =
+  let ijw = Array.make_matrix 3 m 1. in
+  for index = 0 to pred scale do
+    let ii_bit = 
+      Array.init m (fun _ -> if Random.float 1. > ab then 1. else 0.) in
+    let jj_bit = 
+        Array.init m (fun i -> 
+            let h = (c_norm *. ii_bit.(i)) +. (a_norm *. float_of_int (int_of_float (ii_bit.(i)) lxor 1)) in
+            if Random.float 1. > h then 1.
+            else 0.
+          ) in
+    ijw.(0) <- Array.init m (fun i -> ijw.(0).(i) +. ((2. ** float_of_int index) *. ii_bit.(i)));
+    ijw.(1) <- Array.init m (fun i -> ijw.(1).(i) +. ((2. ** float_of_int index) *. jj_bit.(i)));
+    done;
+  ijw
 
-let rec compare_with_pr index m n ab a_norm c_norm ijw scale =
-  if index = scale then ijw
-  else
-    let ii_bit = generate_ii_bit_array [||] m ab in
-    let jj_bit = generate_jj_bit_array [||] ii_bit m a_norm c_norm 0 in
-    let first_row_i_j_w = modify_row_i_j_w ii_bit index ijw.(0) [||] 0 m in
-    let second_row_i_j_w = modify_row_i_j_w jj_bit index ijw.(1) [||] 0 m in
-    let ijw =
-      Array.append
-        (Array.append [| first_row_i_j_w |] [| second_row_i_j_w |])
-        [| ijw.(2) |]
-    in
-    compare_with_pr (index + 1) m n ab a_norm c_norm ijw scale
+let permute (arr : 'a array) : unit =
+  let new_arr = Array.map (fun x -> (Random.bits (), x)) arr in
+  Array.sort compare new_arr;
+  (* print_arr_1 (Array.map snd new_arr); *)
+  Array.iteri (fun i (_, x) -> arr.(i) <- x) new_arr
 
-let permute list =
-  let list = List.map (fun x -> (Random.bits (), x)) list in
-  let list = List.sort compare list in
-  List.map (fun x -> snd x) list
-
-let transpose ar newAr =
-  for i = 0 to Array.length ar - 1 do
-    for j = 0 to Array.length ar.(0) - 1 do
-      !newAr.(j).(i) <- ar.(i).(j)
+let transpose old_arr new_arr =
+  (* Printf.printf "(%d, %d)\n" (Array.length arr) (Array.length arr.(0)); *)
+  for i = 0 to Array.length old_arr - 1 do
+    for j = 0 to Array.length old_arr.(0) - 1 do
+      (* Printf.printf "(%d, %d)\n" i j; *)
+      new_arr.(j).(i) <- old_arr.(i).(j);
     done
-  done;
-  !newAr
-
-let compute_number scale edgefactor =
-  let n = int_of_float (2. ** float_of_int scale) in
-  let m = edgefactor * n in
-  (n, m)
+  done
 
 let write_file ijw file =
   let rec write_file ijw file index =
@@ -110,23 +90,25 @@ let write_file ijw file =
   write_file ijw file 0
 
 let kronecker scale edgefactor =
-  let n, m = compute_number scale edgefactor in
+  let m = edgefactor * (Int.exp 2 scale) in
   let a, b, c = (0.57, 0.19, 0.19) in
-  let ijw = Array.make_matrix 3 m 1. in
   let ab = a +. b in
   let c_norm = c /. (1. -. (a +. b)) in
   let a_norm = a /. (a +. b) in
-  let ijw = compare_with_pr 0 m n ab a_norm c_norm ijw scale in
-  let third_row = random_weight_gen m [||] in
-  let first_row_permute = Array.of_list (permute (Array.to_list ijw.(0))) in
-  let second_row_permute = Array.of_list (permute (Array.to_list ijw.(1))) in
-  let ijw =
-    Array.append
-      (Array.append [| first_row_permute |] [| second_row_permute |])
-      [| third_row |]
-  in
-  let ar = Array.to_list (transpose ijw (ref (Array.make_matrix m 3 1.))) in
-  let ijw = transpose (Array.of_list (permute ar)) (ref ijw) in
+  let ijw = compare_with_pr m ab a_norm c_norm scale in
+  (* print_arr_2 ijw; *)
+  (* print_arr_1 third_row; *)
+  permute ijw.(0);
+  (* print_arr_1 ijw.(0); *)
+  permute ijw.(1);
+  (* print_arr_1 ijw.(1); *)
+  ijw.(2) <- Array.init m (fun _ -> Random.float 1.);
+  (* print_arr_2 ijw; *)
+  let temp_arr = Array.make_matrix m 3 1. in 
+  transpose ijw temp_arr;
+  permute temp_arr;
+  transpose temp_arr ijw;
+  (* print_arr_2 ijw; *)
   if Sys.file_exists "kronecker.txt" then Sys.remove "kronecker.txt";
   let file = open_out "kronecker.txt" in
   let _ = write_file ijw file in
